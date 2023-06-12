@@ -1,7 +1,8 @@
 # 1b: tiiuae/falcon-rw-1b
+# 7b: tiiuae/falcon-7b
 # 40b: tiiuae/falcon-40b
-base_model: tiiuae/falcon-7b
-base_model_config: tiiuae/falcon-7b
+base_model: tiiuae/falcon-40b
+base_model_config: tiiuae/falcon-40b
 # required by falcon custom model code: https://huggingface.co/tiiuae/falcon-7b/tree/main
 trust_remote_code: true
 model_type: AutoModelForCausalLM
@@ -11,7 +12,10 @@ load_in_8bit: false
 load_in_4bit: true
 gptq: false
 strict: false
-push_dataset_to_hub:
+
+push_dataset_to_hub: utensil/axolotl-prepared
+hf_use_auth_token: true
+
 datasets:
   - path: QingyiSi/Alpaca-CoT
     data_files:
@@ -37,11 +41,11 @@ lora_target_modules:
 lora_target_linear: true
 lora_fan_in_fan_out:
 
-wandb_project:
+wandb_project: falcon-qlora
 wandb_watch:
 wandb_run_id:
 wandb_log_model:
-output_dir: ./qlora-out
+output_dir: /workspace/llm-playground/axolotl-trained
 
 # QLoRA paper Table 9
 # - 16 for 7b & 13b
@@ -83,7 +87,7 @@ eval_steps: 5
 save_steps: 10
 debug:
 deepspeed:
-weight_decay: 0.000001
+weight_decay: 0.01
 fsdp:
 fsdp_config:
 special_tokens:
