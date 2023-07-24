@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 import torch
-from datasets import Dataset, DatasetDict, load_dataset, load_from_disk
+from datasets import Dataset, DatasetDict, load_dataset, load_from_disk, concatenate_datasets
 from huggingface_hub import hf_hub_download
 from transformers import PreTrainedTokenizerBase
 
@@ -261,12 +261,11 @@ def load_tokenized_prepared_datasets(
                 raise ValueError(
                     f"unhandled prompt tokenization strategy: {d.type} {suffix}"
                 )
-        LOG.info("tokenizing, merging, and shuffling master dataset")
-
-        samples: List[int] = []
-        for d in datasets:
-            samples = samples + list(d)
-        dataset = Dataset.from_list(samples).shuffle(seed=seed)
+        LOG.info("merging master dataset")
+        dataset = concatenate_datasets(datasets)
+        LOG.info("shuffling master dataset")
+        dataset = dataset.shuffle(seed=seed)
+        
         if cfg.local_rank == 0:
             LOG.info(f"Saving merged prepared dataset to disk... {prepared_ds_path}")
             dataset.save_to_disk(prepared_ds_path)
