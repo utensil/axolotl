@@ -262,7 +262,7 @@ def load_tokenized_prepared_datasets(
                 raise ValueError(
                     f"unhandled prompt tokenization strategy: {d.type} {suffix}"
                 )
-        LOG.info("merging master dataset")
+        LOG.info("Prepare for merging master dataset")
         samples: List[dict] = []
         chunk_size = 1000
         for d in datasets:
@@ -272,6 +272,7 @@ def load_tokenized_prepared_datasets(
                 if not chunk:
                     break
                 samples.extend(chunk)
+        LOG.info("merging master dataset")
         dataset = Dataset.from_list(samples)
         LOG.info("shuffling master dataset")
         dataset = dataset.shuffle(seed=seed)
