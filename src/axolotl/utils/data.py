@@ -1,5 +1,6 @@
 """Module containing data utilities"""
 import functools
+import itertools
 import logging
 from hashlib import md5
 from pathlib import Path
@@ -262,7 +263,16 @@ def load_tokenized_prepared_datasets(
                     f"unhandled prompt tokenization strategy: {d.type} {suffix}"
                 )
         LOG.info("merging master dataset")
-        dataset = concatenate_datasets(datasets, info=DatasetInfo())
+        samples: List[dict] = []
+        chunk_size = 1000
+        for d in datasets:
+            iter_d = iter(d)
+            while True:
+                chunk = list(itertools.islice(iter_d, chunk_size))
+                if not chunk:
+                    break
+                samples.extend(chunk)
+        dataset = Dataset.from_list(samples)
         LOG.info("shuffling master dataset")
         dataset = dataset.shuffle(seed=seed)
         
