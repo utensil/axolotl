@@ -456,6 +456,7 @@ def load_lora(model, cfg):
     )
 
     if cfg.lora_model_dir:
+        LOG.info("Loading pretained LORA")
         model = PeftModel.from_pretrained(
             model,
             cfg.lora_model_dir,
